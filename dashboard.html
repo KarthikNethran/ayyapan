@@ -6,7 +6,6 @@
 <title>Sree Sasatha Seva Sangam</title>
 
 <style>
-/* ---------- BODY & BACKGROUND ---------- */
 html, body {
     height: 100%;
     margin: 0;
@@ -14,41 +13,34 @@ html, body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    background-image: url('lordayyappan.jpg'); /* replace with your image path */
+    background-image: url('lordayyappan.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
-
 .wrap {
     width: 100%;
     max-width: 720px;
     padding: 16px;
     animation: fadeIn 1s ease-out;
 }
-
-/* ---------- FROSTED CARDS ---------- */
 .card {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255,255,255,0.25);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 10px;
     padding: 14px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     margin-top: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255,255,255,0.2);
     opacity: 0;
     transform: translateY(20px);
     animation: cardFadeIn 0.8s forwards;
 }
-
-/* stagger cards fade-in */
 .card:nth-child(1) { animation-delay: 0.2s; }
 .card:nth-child(2) { animation-delay: 0.4s; }
-
-/* ---------- HEADER ---------- */
 .header {
-    background: rgba(210, 180, 140, 0.8);
+    background: rgba(210,180,140,0.8);
     padding: 18px;
     text-align: center;
     color: #4b2e15;
@@ -56,8 +48,6 @@ html, body {
     border-bottom: 3px solid #b88a57;
     border-radius: 8px;
 }
-
-/* ---------- FORM ELEMENTS ---------- */
 label { font-weight:600; font-size:14px; display:block; margin-top:10px; margin-bottom:6px; }
 input, select { width:100%; padding:10px; border-radius:8px; border:1px solid #cfcfcf; font-size:15px; box-sizing:border-box; }
 .row { display:flex; gap:10px; margin-top:6px; }
@@ -74,35 +64,21 @@ th, td { padding:8px; border:1px solid #eee; text-align:left; vertical-align:top
 th { background: rgba(250,250,250,0.6); font-weight:700; }
 .center { text-align:center; }
 .loader { display:inline-block; width:18px; height:18px; border:3px solid #fff; border-radius:50%; border-top-color:#0066cc; animation:spin 1s linear infinite; vertical-align:middle; margin-left:8px; }
-
-/* ---------- ANIMATIONS ---------- */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 @keyframes cardFadeIn { to { opacity:1; transform: translateY(0); } }
-
-@media (max-width:720px) {
-    .row { flex-direction:column; }
-    .controls { flex-direction:column; }
-    .summary { flex-direction:column; }
-}
+@media (max-width:720px) { .row { flex-direction:column; } .controls { flex-direction:column; } .summary { flex-direction:column; } }
 </style>
 </head>
-
 <body>
-<div class="wrap">
 
+<div class="wrap">
   <div class="header center">Swamiya Saranam Ayyappa</div>
 
-  <!-- Form -->
   <div class="card">
     <h2 class="center" style="margin:0 0 6px 0;">Sree Sasatha Seva Sangam</h2>
-
-    <label for="name">Name</label>
-    <input id="name" type="text" placeholder="Enter name">
-
-    <label for="door">Door No</label>
-    <input id="door" type="text" placeholder="Door / Flat no">
-
+    <label for="name">Name</label><input id="name" type="text" placeholder="Enter name">
+    <label for="door">Door No</label><input id="door" type="text" placeholder="Door / Flat no">
     <label for="street">Street Name</label>
     <select id="street">
       <option>Maniyammai Street</option>
@@ -120,22 +96,13 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     </select>
 
     <div class="row">
-      <div class="col">
-        <label for="amount">Amount</label>
-        <input id="amount" type="number" min="0" placeholder="Amount (numbers only)">
-      </div>
-      <div class="col">
-        <label for="balance">Balance</label>
-        <input id="balance" type="number" min="0" placeholder="Balance (pending)">
-      </div>
+      <div class="col"><label for="amount">Amount</label><input id="amount" type="number" min="0" placeholder="Amount (numbers only)"></div>
+      <div class="col"><label for="balance">Balance</label><input id="balance" type="number" min="0" placeholder="Balance (pending)"></div>
     </div>
 
-    <label for="date">Date (optional)</label>
-    <input id="date" type="date" placeholder="Leave empty to use server date">
+    <label for="date">Date (optional)</label><input id="date" type="date" placeholder="Leave empty to use server date">
 
-    <!-- ✅ Mobile Number -->
-    <label for="mobile">Mobile Number</label>
-    <input id="mobile" type="text" placeholder="Enter mobile number">
+    <label for="mobile">Mobile Number</label><input id="mobile" type="text" placeholder="Enter mobile number">
 
     <label>Payment Type</label>
     <div class="payment-box">
@@ -145,61 +112,36 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
 
     <label for="receiver">Receiver Name</label>
     <select id="receiver">
-      <option>Gopi</option>
-      <option>Mahalingam</option>
-      <option>Karthikeyan</option>
-      <option>Jaganathan</option>
-      <option>Anandhan</option>
-      <option>Subramani</option>
-      <option>Saravanan</option>
-      <option>Manjunathan</option>
+      <option>Gopi</option><option>Mahalingam</option><option>Karthikeyan</option>
+      <option>Jaganathan</option><option>Anandhan</option><option>Subramani</option>
+      <option>Saravanan</option><option>Manjunathan</option>
     </select>
 
-    <div style="margin-top:12px;">
-      <button id="submitBtn" class="btn">Submit</button>
-    </div>
+    <div style="margin-top:12px;"><button id="submitBtn" class="btn">Submit</button></div>
   </div>
 
-  <!-- Filter card -->
   <div class="card">
     <h3 style="margin:0 0 8px 0;" class="center">Date Filter & Report</h3>
-
     <div class="row">
-      <div class="col">
-        <label for="fromDate">From Date</label>
-        <input id="fromDate" type="date">
-      </div>
-      <div class="col">
-        <label for="toDate">To Date</label>
-        <input id="toDate" type="date">
-      </div>
+      <div class="col"><label for="fromDate">From Date</label><input id="fromDate" type="date"></div>
+      <div class="col"><label for="toDate">To Date</label><input id="toDate" type="date"></div>
     </div>
-
     <div style="margin-top:10px;">
       <label for="filterType">Show</label>
-      <select id="filterType">
-        <option value="amount">Total Amount</option>
-        <option value="pending">Total Pending</option>
-      </select>
+      <select id="filterType"><option value="amount">Total Amount</option><option value="pending">Total Pending</option></select>
     </div>
-
     <div class="controls">
-      <div style="flex:1;">
-        <button id="filterBtn" class="btn">Get Report</button>
-      </div>
+      <div style="flex:1;"><button id="filterBtn" class="btn">Get Report</button></div>
       <div id="statusMsg" style="min-width:160px; text-align:right;"></div>
     </div>
-
     <div class="summary" id="summaryBox" style="display:none;">
       <div class="box"><strong>Total Amount</strong><div id="totalAmount">₹0</div></div>
       <div class="box"><strong>Total Pending</strong><div id="totalPending">₹0</div></div>
     </div>
-
     <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
       <button id="downloadBtn" class="btn" style="background:#28a745;">Download Report (CSV)</button>
       <div style="flex:1;"></div>
     </div>
-
     <div id="tableWrap" style="display:none; margin-top:12px;">
       <table id="resultTable">
         <thead>
@@ -211,95 +153,130 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
       </table>
     </div>
   </div>
-
 </div>
 
 <script>
-// ----------------- Your existing JS script -----------------
 const scriptURL = "https://script.google.com/macros/s/AKfycbyw6bKwtI7JtrpR2nSatrHeI44g2UmRhTJR1Olr9u5q8aRNGdklQ7Lp9obnb5EVhkmM0A/exec";
 
 function rupee(x){ return '₹' + Number(x || 0).toLocaleString('en-IN'); }
-function esc(s){ if (!s && s !== 0) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ if (!s && s!==0) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 const submitBtn = document.getElementById('submitBtn');
 const filterBtn = document.getElementById('filterBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const statusMsg = document.getElementById('statusMsg');
-
-function setLoading(el, isLoading, text) {
-  if (isLoading) {
-    el.disabled = true;
-    statusMsg.innerHTML = '<span style="color:#666;">' + (text||'Working...') + '</span> <span class="loader"></span>';
-  } else {
-    el.disabled = false;
-    statusMsg.innerHTML = '';
-  }
-}
-
-// ---------- SUBMIT & REPORT LOGIC (UNCHANGED) ----------
 let lastFetchedRows = [];
 
-submitBtn.addEventListener('click', async () => {
-  const name = document.getElementById('name').value.trim();
-  const door = document.getElementById('door').value.trim();
-  const street = document.getElementById('street').value;
-  const amount = document.getElementById('amount').value;
-  const balance = document.getElementById('balance').value;
-  const dateVal = document.getElementById('date').value;
-  const paymentEl = document.querySelector('input[name="payment"]:checked');
-  const receiver = document.getElementById('receiver').value;
-  const mobile = document.getElementById('mobile').value.trim();
+function setLoading(el, isLoading, text) {
+  if(isLoading){ el.disabled=true; statusMsg.innerHTML='<span style="color:#666;">'+(text||'Working...')+'</span> <span class="loader"></span>'; }
+  else { el.disabled=false; statusMsg.innerHTML=''; }
+}
 
-  if (!name || !door || !amount) { alert('Please fill Name, Door No and Amount.'); return; }
-  if (!paymentEl) { alert('Please select Payment Type.'); return; }
-
-  const payload = { name, door, street, amount: Number(amount), balance: Number(balance || 0), payment: paymentEl.value, receiver, mobile };
-  if (dateVal) payload.date = dateVal;
-
-  try {
-    setLoading(submitBtn, true, 'Saving...');
-    const res = await fetch(scriptURL, { method:'POST', body: JSON.stringify(payload) });
-    const data = await res.json();
-
-    if (data.status === 'duplicate') {
-      alert('❗ Record already exists (Name + Door No + Amount).');
-    } else if (data.status === 'success') {
-      alert('✔ Saved successfully.');
-      document.getElementById('name').value = '';
-      document.getElementById('door').value = '';
-      document.getElementById('amount').value = '';
-      document.getElementById('balance').value = '';
-      document.getElementById('date').value = '';
-      document.getElementById('mobile').value = '';
-      document.querySelectorAll('input[name="payment"]').forEach(i=>i.checked=false);
-      const from = document.getElementById('fromDate').value;
-      const to = document.getElementById('toDate').value;
-      if (from && to) fetchReport(from,to);
+// ---------- FETCH REPORT FUNCTION ----------
+async function fetchReport(from,to){
+  if(!from||!to){ alert('Select From and To date'); return; }
+  try{
+    setLoading(filterBtn,true,'Fetching report...');
+    const url=scriptURL+'?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to);
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.status!=='filter-success'){ alert('Filter error: '+(data.message||'Unknown')); return; }
+    lastFetchedRows=data.rows||[];
+    const filterType=document.getElementById('filterType').value;
+    let filtered=[], totalAmount=0, totalPending=0;
+    if(filterType==='amount'){
+      filtered=lastFetchedRows.filter(r=>Number(r.balance)>=0 && Number(r.amount)>0);
+      totalAmount=filtered.reduce((s,r)=>s+Number(r.amount),0);
     } else {
-      alert('Error: ' + (data.message || 'Unknown response'));
+      filtered=lastFetchedRows.filter(r=>Number(r.balance)>0);
+      totalPending=filtered.reduce((s,r)=>s+Number(r.balance),0);
     }
-  } catch (err) {
-    alert('Network or server error.\n' + err);
-  } finally { setLoading(submitBtn, false); }
+    document.getElementById('summaryBox').style.display='flex';
+    document.getElementById('totalAmount').innerText=rupee(totalAmount||data.totalAmount||0);
+    document.getElementById('totalPending').innerText=rupee(totalPending||data.totalPending||0);
+
+    const tbody=document.querySelector('#resultTable tbody'); tbody.innerHTML='';
+    if(filtered.length){
+      filtered.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML='<td>'+esc(r.name)+'</td><td>'+esc(r.door)+'</td><td>'+esc(r.street)+'</td><td>'+rupee(r.amount)+'</td><td>'+rupee(r.balance)+'</td><td>'+esc(r.payment)+'</td><td>'+esc(r.receiver)+'</td><td>'+esc(r.date)+'</td><td>'+esc(r.mobile)+'</td>';
+        tbody.appendChild(tr);
+      });
+      document.getElementById('tableWrap').style.display='block';
+    } else { document.getElementById('tableWrap').style.display='none'; }
+
+    if(filterType==='amount'){ statusMsg.innerHTML='<strong>Showing Total Amount (Balance≥0 & Amount>0): '+rupee(totalAmount)+'</strong>'; }
+    else { statusMsg.innerHTML='<strong>Showing Total Pending (Balance>0): '+rupee(totalPending)+'</strong>'; }
+
+  } catch(err){ alert('Error fetching report: '+err); }
+  finally{ setLoading(filterBtn,false); }
+}
+
+// ---------- BUTTON EVENTS ----------
+submitBtn.addEventListener('click', async ()=>{
+  const name=document.getElementById('name').value.trim();
+  const door=document.getElementById('door').value.trim();
+  const street=document.getElementById('street').value;
+  const amount=document.getElementById('amount').value;
+  const balance=document.getElementById('balance').value;
+  const dateVal=document.getElementById('date').value;
+  const paymentEl=document.querySelector('input[name="payment"]:checked');
+  const receiver=document.getElementById('receiver').value;
+  const mobile=document.getElementById('mobile').value.trim();
+
+  if(!name||!door||!amount){ alert('Fill Name, Door No, Amount'); return; }
+  if(!paymentEl){ alert('Select Payment Type'); return; }
+
+  const payload={ name, door, street, amount:Number(amount), balance:Number(balance||0), payment:paymentEl.value, receiver, mobile };
+  if(dateVal) payload.date=dateVal;
+
+  try{
+    setLoading(submitBtn,true,'Saving...');
+    const res=await fetch(scriptURL,{ method:'POST', body:JSON.stringify(payload) });
+    const data=await res.json();
+    if(data.status==='duplicate'){ alert('❗ Record already exists'); }
+    else if(data.status==='success'){
+      alert('✔ Saved successfully');
+      document.getElementById('name').value='';
+      document.getElementById('door').value='';
+      document.getElementById('amount').value='';
+      document.getElementById('balance').value='';
+      document.getElementById('date').value='';
+      document.getElementById('mobile').value='';
+      document.querySelectorAll('input[name="payment"]').forEach(i=>i.checked=false);
+      const from=document.getElementById('fromDate').value;
+      const to=document.getElementById('toDate').value;
+      if(from && to) fetchReport(from,to);
+    } else { alert('Error: '+(data.message||'Unknown')); }
+  } catch(err){ alert('Network or server error.\n'+err); }
+  finally{ setLoading(submitBtn,false); }
 });
 
-// Fetch report & download CSV - existing logic unchanged
-filterBtn.addEventListener('click', () => {
-  const from = document.getElementById('fromDate').value;
-  const to = document.getElementById('toDate').value;
-  fetchReport(from, to);
+filterBtn.addEventListener('click',()=>{ const from=document.getElementById('fromDate').value; const to=document.getElementById('toDate').value; fetchReport(from,to); });
+
+downloadBtn.addEventListener('click',()=>{
+  const from=document.getElementById('fromDate').value;
+  const to=document.getElementById('toDate').value;
+  if(!from||!to){ alert('Select dates first'); return; }
+  const filterType=document.getElementById('filterType').value;
+  let filtered=[];
+  if(filterType==='amount'){ filtered=lastFetchedRows.filter(r=>Number(r.balance)>=0 && Number(r.amount)>0); }
+  else{ filtered=lastFetchedRows.filter(r=>Number(r.balance)>0); }
+  if(!filtered.length){ alert('No rows to download'); return; }
+  const headers=["Name","Door No","Street","Amount","Balance","Payment","Receiver","Date","Mobile"];
+  const rows=filtered.map(r=>[r.name,r.door,r.street,r.amount,r.balance,r.payment,r.receiver,r.date,r.mobile]);
+  const csv=[headers].concat(rows).map(e=>e.map(c=>{ if(c===null||c===undefined) return ''; const s=c.toString(); if(s.indexOf('"')!==-1||s.indexOf(',')!==-1||s.indexOf('\n')!==-1) return '"'+s.replace(/"/g,'""')+'"'; return s; }).join(',')).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const fname='Report_'+from+'_to_'+to+'.csv';
+  const link=document.createElement('a'); link.href=URL.createObjectURL(blob); link.download=fname; document.body.appendChild(link); link.click(); document.body.removeChild(link);
 });
 
-downloadBtn.addEventListener('click', () => {
-  // download CSV logic unchanged
-});
-
-// Initialize
+// ---------- INIT ----------
 (function init(){
-  const today = new Date().toISOString().slice(0,10);
-  document.getElementById('fromDate').value = today;
-  document.getElementById('toDate').value = today;
-  fetchReport(today, today);
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('fromDate').value=today;
+  document.getElementById('toDate').value=today;
+  fetchReport(today,today);
 })();
 </script>
 
