@@ -6,37 +6,51 @@
 <title>Login – Ayyappa Seva</title>
 
 <style>
-    body {
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
         font-family: Arial, sans-serif;
-        background:#d2b48c; /* Light Brown */
-        margin:0;
-        padding:0;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        height:100vh;
+    }
+
+    body {
+        /* Full-screen background image */
+        background-image: url('ayyappa.jpg'); /* Replace with your image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .login-box {
-        background:white;
         width: 350px;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        text-align:center;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        color: #5a3f2e;
+
+        /* Frosted glass effect */
+        background: rgba(255, 255, 255, 0.25); /* semi-transparent */
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
     }
 
     h2 {
-        margin-bottom: 20px;
-        font-size: 22px;
-        color:#5a3f2e;
+        margin-bottom: 25px;
+        font-size: 24px;
+        font-weight: 600;
     }
 
     input {
         width: 90%;
         padding: 12px;
-        margin: 8px 0;
-        border-radius: 6px;
+        margin: 10px 0;
+        border-radius: 8px;
         border: 1px solid #aaa;
         font-size: 16px;
     }
@@ -44,23 +58,31 @@
     button {
         width: 95%;
         padding: 12px;
-        background:#5a3f2e;
-        color:white;
-        border:none;
-        border-radius:6px;
+        background: #5a3f2e;
+        color: white;
+        border: none;
+        border-radius: 8px;
         font-size: 17px;
-        cursor:pointer;
-        margin-top: 10px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background 0.3s;
     }
 
     button:hover {
-        background:#3e2b20;
+        background: #3e2b20;
     }
 
     .error {
-        margin-top:10px;
-        color:red;
-        font-size:14px;
+        margin-top: 10px;
+        color: red;
+        font-size: 14px;
+    }
+
+    @media (max-width: 400px) {
+        .login-box {
+            width: 90%;
+            padding: 20px;
+        }
     }
 </style>
 
@@ -71,7 +93,6 @@ function login() {
     let error = document.getElementById("errorMsg");
 
     if (u === "admin" && p === "ayyappa") {
-        // redirect to your main page
         window.location.href = "dashboard.html";
     } else {
         error.textContent = "❌ Wrong username or password";
