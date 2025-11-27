@@ -55,6 +55,7 @@ html, body {
 /* ---------- FORM ELEMENTS ---------- */
 label { font-weight:600; font-size:14px; display:block; margin-top:10px; margin-bottom:6px; }
 input, select { width:100%; padding:10px; border-radius:8px; border:1px solid #cfcfcf; font-size:15px; box-sizing:border-box; }
+input[readonly] { background-color: #f0f0f0; cursor: not-allowed; }
 .row { display:flex; gap:10px; margin-top:6px; }
 .col { flex:1; }
 .payment-box { display:flex; justify-content:space-around; align-items:center; gap:10px; padding:10px; border-radius:8px; margin-top:6px; background: rgba(243,229,216,0.6); border:2px solid #b88a57; }
@@ -73,13 +74,13 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ---------- SCROLLABLE TABLE FIX ---------- */
-#tableWrap, #groceryTableWrap {
+#tableWrap, #groceryTableWrap, #vilakuTableWrap {
   display: block !important;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-#tableWrap table, #groceryTableWrap table {
+#tableWrap table, #groceryTableWrap table, #vilakuTableWrap table {
   width: max-content;
   min-width: 100%;
 }
@@ -106,6 +107,7 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     <div class="payment-box">
       <label class="payment-option"><input type="radio" name="mode" value="amount" checked> Amount</label>
       <label class="payment-option"><input type="radio" name="mode" value="groceries"> Groceries</label>
+      <label class="payment-option"><input type="radio" name="mode" value="vilaku"> Vilaku</label>
     </div>
   </div>
 
@@ -256,6 +258,70 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     </div>
   </div>
 
+  <!-- Vilaku Form Card -->
+  <div class="card hidden" id="vilakuCard">
+    <h3 class="center" style="margin:0 0 6px 0;">Vilaku Entry</h3>
+
+    <label for="vName">Name</label>
+    <input id="vName" type="text" placeholder="Enter name">
+
+    <label for="vDoor">Door No</label>
+    <input id="vDoor" type="text" placeholder="Door / Flat no">
+
+    <label for="vStreet">Street Name</label>
+    <select id="vStreet">
+      <option>Maniyammai Street</option>
+      <option>Kozhavizhi Amman 1st Street</option>
+      <option>Kozhavizhi Amman 2nd Street</option>
+      <option>Kozhavizhi Amman 3rd Street</option>
+      <option>Kozhavizhi Amman 4th Street</option>
+      <option>Kozhavizhi Amman 5th Street</option>
+      <option>MGR Nagar 1st Street</option>
+      <option>MGR Nagar 2nd Street</option>
+      <option>MGR Nagar 3rd Street</option>
+      <option>Govindha Nagar 1st Street</option>
+      <option>Govindha Nagar 2nd Street</option>
+      <option>Govindha Nagar 3rd Street</option>
+    </select>
+
+    <label for="vAmount">Vilaku Amount</label>
+    <input id="vAmount" type="number" value="301" readonly placeholder="₹301">
+
+    <label>Payment Type</label>
+    <div class="payment-box">
+      <label class="payment-option"><input type="radio" name="vPayment" value="GPay"> GPay</label>
+      <label class="payment-option"><input type="radio" name="vPayment" value="Cash"> Cash</label>
+    </div>
+
+    <label for="vPending">Pending Status</label>
+    <select id="vPending">
+      <option value="No">No</option>
+      <option value="Yes">Yes</option>
+    </select>
+
+    <label for="vReceiver">Receiver Name</label>
+    <select id="vReceiver">
+      <option>Gopi</option>
+      <option>Mahalingam</option>
+      <option>Karthikeyan</option>
+      <option>Jaganathan</option>
+      <option>Anandhan</option>
+      <option>Subramani</option>
+      <option>Saravanan</option>
+      <option>Manjunathan</option>
+    </select>
+
+    <label for="vDate">Date (optional)</label>
+    <input id="vDate" type="date" placeholder="Leave empty to use server date">
+
+    <label for="vMobile">Mobile Number</label>
+    <input id="vMobile" type="text" placeholder="Enter mobile number">
+
+    <div style="margin-top:12px;">
+      <button id="submitVilakuBtn" class="btn">Submit</button>
+    </div>
+  </div>
+
   <!-- Amount Report Card -->
   <div class="card" id="amountReportCard">
     <h3 style="margin:0 0 8px 0;" class="center">Amount Report</h3>
@@ -356,40 +422,107 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     </div>
   </div>
 
+  <!-- Vilaku Report Card -->
+  <div class="card hidden" id="vilakuReportCard">
+    <h3 style="margin:0 0 8px 0;" class="center">Vilaku Report</h3>
+
+    <div class="row">
+      <div class="col">
+        <label for="vFromDate">From Date</label>
+        <input id="vFromDate" type="date">
+      </div>
+      <div class="col">
+        <label for="vToDate">To Date</label>
+        <input id="vToDate" type="date">
+      </div>
+    </div>
+
+    <div style="margin-top:10px;">
+      <label for="vFilterPending">Pending Status</label>
+      <select id="vFilterPending">
+        <option value="all">All</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <div class="controls">
+      <div style="flex:1;">
+        <button id="vFilterBtn" class="btn">Get Report</button>
+      </div>
+      <div id="vStatusMsg" style="min-width:160px; text-align:right;"></div>
+    </div>
+
+    <div class="summary" id="vSummaryBox" style="display:none;">
+      <div class="box"><strong>Total Amount</strong><div id="vTotalAmount">₹0</div></div>
+      <div class="box"><strong>Total Count</strong><div id="vTotalCount">0</div></div>
+    </div>
+
+    <div style="margin-top:10px; display:flex; gap:10px; align-items:center;">
+      <button id="vDownloadBtn" class="btn" style="background:#28a745;">Download Report (CSV)</button>
+    </div>
+
+    <div id="vilakuTableWrap">
+      <table id="vilakuResultTable">
+        <thead>
+          <tr>
+            <th>Name</th><th>Door</th><th>Street</th><th>Amount</th><th>Payment</th>
+            <th>Pending</th><th>Receiver</th><th>Date</th><th>Mobile</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbzUCnYcSBmKkPXEIgyVagc1kOHCPb3UHMLDKf_VIMcXy2bJzuF8isfuilzdBgq7D-EcJA/exec"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbyaOURvzbm-rlaPguC4ZnvSFheZ5J4OaTz8VR2b0wtZeGxeMk_dSRgsnROQFhDDQhO7/exec"; 
 
 function rupee(x){ return '₹' + Number(x || 0).toLocaleString('en-IN'); }
 function esc(s){ if (!s && s !== 0) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 const submitBtn = document.getElementById('submitBtn');
 const submitGroceryBtn = document.getElementById('submitGroceryBtn');
+const submitVilakuBtn = document.getElementById('submitVilakuBtn');
 const filterBtn = document.getElementById('filterBtn');
 const gFilterBtn = document.getElementById('gFilterBtn');
+const vFilterBtn = document.getElementById('vFilterBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const gDownloadBtn = document.getElementById('gDownloadBtn');
+const vDownloadBtn = document.getElementById('vDownloadBtn');
 const statusMsg = document.getElementById('statusMsg');
 const gStatusMsg = document.getElementById('gStatusMsg');
+const vStatusMsg = document.getElementById('vStatusMsg');
 
 let lastFetchedRows = [];
 let lastFetchedGroceryRows = [];
+let lastFetchedVilakuRows = [];
 
 // Mode switching
 document.querySelectorAll('input[name="mode"]').forEach(radio => {
   radio.addEventListener('change', (e) => {
     const mode = e.target.value;
+    
+    // Hide all cards
+    document.getElementById('amountCard').classList.add('hidden');
+    document.getElementById('groceriesCard').classList.add('hidden');
+    document.getElementById('vilakuCard').classList.add('hidden');
+    document.getElementById('amountReportCard').classList.add('hidden');
+    document.getElementById('groceryReportCard').classList.add('hidden');
+    document.getElementById('vilakuReportCard').classList.add('hidden');
+    
+    // Show relevant cards based on mode
     if (mode === 'amount') {
       document.getElementById('amountCard').classList.remove('hidden');
-      document.getElementById('groceriesCard').classList.add('hidden');
       document.getElementById('amountReportCard').classList.remove('hidden');
-      document.getElementById('groceryReportCard').classList.add('hidden');
-    } else {
-      document.getElementById('amountCard').classList.add('hidden');
+    } else if (mode === 'groceries') {
       document.getElementById('groceriesCard').classList.remove('hidden');
-      document.getElementById('amountReportCard').classList.add('hidden');
       document.getElementById('groceryReportCard').classList.remove('hidden');
+    } else if (mode === 'vilaku') {
+      document.getElementById('vilakuCard').classList.remove('hidden');
+      document.getElementById('vilakuReportCard').classList.remove('hidden');
     }
   });
 });
@@ -496,6 +629,51 @@ async function fetchGroceryReport(from, to, pending){
   finally{ setLoading(gFilterBtn, gStatusMsg, false); }
 }
 
+// Vilaku Report
+async function fetchVilakuReport(from, to, pending){
+  if(!from||!to){ alert('Select dates'); return; }
+  try{
+    setLoading(vFilterBtn, vStatusMsg, true,'Fetching...');
+    const url = scriptURL+'?type=vilaku&from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)+'&pending='+encodeURIComponent(pending);
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.status!=='filter-success'){ alert('Error: '+(data.message||'Unknown')); return; }
+
+    lastFetchedVilakuRows = data.rows || [];
+
+    let totalAmount = 0;
+    const tbody = document.querySelector('#vilakuResultTable tbody');
+    tbody.innerHTML='';
+    if(lastFetchedVilakuRows.length){
+      lastFetchedVilakuRows.forEach(r=>{
+        totalAmount += Number(r.amount || 0);
+        const tr=document.createElement('tr');
+        tr.innerHTML=
+          '<td>'+esc(r.name)+'</td>'+
+          '<td>'+esc(r.door)+'</td>'+
+          '<td>'+esc(r.street)+'</td>'+
+          '<td>'+rupee(r.amount)+'</td>'+
+          '<td>'+esc(r.payment)+'</td>'+
+          '<td>'+esc(r.pending)+'</td>'+
+          '<td>'+esc(r.receiver)+'</td>'+
+          '<td>'+esc(r.date)+'</td>'+
+          '<td>'+esc(r.mobile)+'</td>';
+        tbody.appendChild(tr);
+      });
+      document.getElementById('vilakuTableWrap').style.display='block';
+      document.getElementById('vSummaryBox').style.display='flex';
+      document.getElementById('vTotalAmount').innerText = rupee(totalAmount);
+      document.getElementById('vTotalCount').innerText = lastFetchedVilakuRows.length;
+      vStatusMsg.innerHTML='<strong>Total: '+rupee(totalAmount)+' ('+lastFetchedVilakuRows.length+' records)</strong>';
+    } else { 
+      document.getElementById('vilakuTableWrap').style.display='none'; 
+      document.getElementById('vSummaryBox').style.display='none';
+      vStatusMsg.innerHTML='<strong>No records found</strong>';
+    }
+  }catch(err){ alert('Error fetching vilaku report.\n'+err); }
+  finally{ setLoading(vFilterBtn, vStatusMsg, false); }
+}
+
 // Submit Amount
 submitBtn.addEventListener('click', async ()=>{
   const name=document.getElementById('name').value.trim();
@@ -575,6 +753,45 @@ submitGroceryBtn.addEventListener('click', async ()=>{
   finally{ setLoading(submitGroceryBtn, gStatusMsg, false); }
 });
 
+// Submit Vilaku
+submitVilakuBtn.addEventListener('click', async ()=>{
+  const name=document.getElementById('vName').value.trim();
+  const door=document.getElementById('vDoor').value.trim();
+  const street=document.getElementById('vStreet').value;
+  const amount=document.getElementById('vAmount').value; // Always 300
+  const paymentEl=document.querySelector('input[name="vPayment"]:checked');
+  const pending=document.getElementById('vPending').value;
+  const receiver=document.getElementById('vReceiver').value;
+  const dateVal=document.getElementById('vDate').value;
+  const mobile=document.getElementById('vMobile').value.trim();
+
+  if(!name||!door){ alert('Fill Name & Door'); return; }
+  if(!paymentEl){ alert('Select Payment Type'); return; }
+
+  const payload={type:'vilaku',name,door,street,amount:Number(amount),payment:paymentEl.value,pending,receiver,mobile};
+  if(dateVal) payload.date=dateVal;
+
+  try{
+    setLoading(submitVilakuBtn, vStatusMsg, true,'Saving...');
+    const res=await fetch(scriptURL,{method:'POST',body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.status==='duplicate'){ alert('Duplicate record'); }
+    else if(data.status==='success'){
+      alert('Saved successfully');
+      document.getElementById('vName').value='';
+      document.getElementById('vDoor').value='';
+      document.getElementById('vDate').value='';
+      document.getElementById('vMobile').value='';
+      document.querySelectorAll('input[name="vPayment"]').forEach(i=>i.checked=false);
+      const from=document.getElementById('vFromDate').value;
+      const to=document.getElementById('vToDate').value;
+      const pendingFilter=document.getElementById('vFilterPending').value;
+      if(from&&to) fetchVilakuReport(from,to,pendingFilter);
+    } else { alert('Error: '+(data.message||'Unknown')); }
+  } catch(err){ alert('Network error.\n'+err); }
+  finally{ setLoading(submitVilakuBtn, vStatusMsg, false); }
+});
+
 // Filter buttons
 filterBtn.addEventListener('click',()=>{ 
   const from=document.getElementById('fromDate').value; 
@@ -587,6 +804,13 @@ gFilterBtn.addEventListener('click',()=>{
   const to=document.getElementById('gToDate').value; 
   const pending=document.getElementById('gFilterPending').value;
   fetchGroceryReport(from,to,pending); 
+});
+
+vFilterBtn.addEventListener('click',()=>{ 
+  const from=document.getElementById('vFromDate').value; 
+  const to=document.getElementById('vToDate').value; 
+  const pending=document.getElementById('vFilterPending').value;
+  fetchVilakuReport(from,to,pending); 
 });
 
 // Download buttons
@@ -616,6 +840,17 @@ gDownloadBtn.addEventListener('click',()=>{
   downloadCSV(headers, rows, 'Grocery_Report_'+from+'_to_'+to+'.csv');
 });
 
+vDownloadBtn.addEventListener('click',()=>{
+  const from=document.getElementById('vFromDate').value;
+  const to=document.getElementById('vToDate').value;
+  if(!from||!to){ alert('Select dates first'); return; }
+  if(!lastFetchedVilakuRows.length){ alert('No rows to download'); return; }
+
+  const headers=["Name","Door No","Street","Amount","Payment","Pending","Receiver","Date","Mobile"];
+  const rows=lastFetchedVilakuRows.map(r=>[r.name,r.door,r.street,r.amount,r.payment,r.pending,r.receiver,r.date,r.mobile]);
+  downloadCSV(headers, rows, 'Vilaku_Report_'+from+'_to_'+to+'.csv');
+});
+
 function downloadCSV(headers, rows, filename) {
   const csvContent=[headers].concat(rows).map(e=>e.map(cell=>{
     if(cell===null||cell===undefined) return '';
@@ -640,6 +875,8 @@ function downloadCSV(headers, rows, filename) {
   document.getElementById('toDate').value=today;
   document.getElementById('gFromDate').value=today;
   document.getElementById('gToDate').value=today;
+  document.getElementById('vFromDate').value=today;
+  document.getElementById('vToDate').value=today;
   fetchReport(today,today);
 })();
 </script>
