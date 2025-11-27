@@ -245,7 +245,11 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
       <option>Ghee</option>
       <option>Karpuram</option>
       <option>Oil</option>
+      <option>Others</option>
     </select>
+
+    <!-- Textbox for custom item when "Others" is selected -->
+    <input id="gItemOther" type="text" placeholder="Enter item name" class="hidden">
 
     <div class="row">
       <div class="col">
@@ -485,7 +489,7 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     </div>
 
     <div class="controls">
-      <div style="flex:1;">
+      <div style="flex:1%;">
         <button id="vFilterBtn" class="btn">Get Report</button>
       </div>
       <div id="vStatusMsg" style="min-width:160px; text-align:right;"></div>
@@ -583,6 +587,22 @@ let currentUpdateType = null; // 'amount' | 'grocery' | 'vilaku'
 let currentAmountUpdateRow = null;
 let currentGroceryUpdateRow = null;
 let currentVilakuUpdateRow = null;
+
+// Groceries "Others" item elements
+const gItemSelect = document.getElementById('gItem');
+const gItemOtherInput = document.getElementById('gItemOther');
+
+// Show / hide "Other item" textbox based on dropdown
+if (gItemSelect && gItemOtherInput) {
+  gItemSelect.addEventListener('change', () => {
+    if (gItemSelect.value === 'Others') {
+      gItemOtherInput.classList.remove('hidden');
+    } else {
+      gItemOtherInput.classList.add('hidden');
+      gItemOtherInput.value = '';
+    }
+  });
+}
 
 // Mode switching
 document.querySelectorAll('input[name="mode"]').forEach(radio => {
@@ -737,7 +757,29 @@ function selectSearchRecord(r){
     document.getElementById('gName').value = r.name || '';
     document.getElementById('gDoor').value = r.door || '';
     document.getElementById('gStreet').value = r.street || '';
-    document.getElementById('gItem').value = r.item || '';
+
+    // Handle base items vs custom item for "Others"
+    const baseItems = ['Rice','Ghee','Karpuram','Oil'];
+    if (baseItems.includes(r.item)) {
+      gItemSelect.value = r.item;
+      if (gItemOtherInput) {
+        gItemOtherInput.classList.add('hidden');
+        gItemOtherInput.value = '';
+      }
+    } else if (r.item) {
+      gItemSelect.value = 'Others';
+      if (gItemOtherInput) {
+        gItemOtherInput.classList.remove('hidden');
+        gItemOtherInput.value = r.item;
+      }
+    } else {
+      gItemSelect.value = 'Rice';
+      if (gItemOtherInput) {
+        gItemOtherInput.classList.add('hidden');
+        gItemOtherInput.value = '';
+      }
+    }
+
     document.getElementById('gQty').value = (r.qty != null ? r.qty : '');
     document.getElementById('gUnit').value = r.unit || '';
     document.getElementById('gPending').value = r.pending || 'No';
@@ -953,7 +995,7 @@ submitGroceryBtn.addEventListener('click', async ()=>{
   const name=document.getElementById('gName').value.trim();
   const door=document.getElementById('gDoor').value.trim();
   const street=document.getElementById('gStreet').value;
-  const item=document.getElementById('gItem').value;
+  let item=document.getElementById('gItem').value;
   const qty=document.getElementById('gQty').value;
   const unit=document.getElementById('gUnit').value;
   const pending=document.getElementById('gPending').value;
@@ -962,6 +1004,16 @@ submitGroceryBtn.addEventListener('click', async ()=>{
   const mobile=document.getElementById('gMobile').value.trim();
 
   if(!name||!door||!qty){ alert('Fill Name, Door & Quantity'); return; }
+
+  // If "Others" selected, take value from textbox
+  if (item === 'Others') {
+    const otherVal = gItemOtherInput ? gItemOtherInput.value.trim() : '';
+    if (!otherVal) {
+      alert('Enter item name for Others');
+      return;
+    }
+    item = otherVal;
+  }
 
   let payloadType = 'grocery';
   if(currentGroceryUpdateRow){ payloadType = 'update-grocery'; }
@@ -982,6 +1034,11 @@ submitGroceryBtn.addEventListener('click', async ()=>{
       document.getElementById('gQty').value='';
       document.getElementById('gDate').value='';
       document.getElementById('gMobile').value='';
+      if (gItemSelect && gItemOtherInput) {
+        gItemSelect.value = 'Rice';
+        gItemOtherInput.classList.add('hidden');
+        gItemOtherInput.value = '';
+      }
       const from=document.getElementById('gFromDate').value;
       const to=document.getElementById('gToDate').value;
       const pendingFilter=document.getElementById('gFilterPending').value;
