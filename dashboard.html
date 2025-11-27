@@ -87,6 +87,41 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
 
 .hidden { display: none !important; }
 
+/* ---------- SEARCH MODAL FOR UPDATE ---------- */
+#searchModal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+#searchModal.hidden {
+    display: none !important;
+}
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+}
+#searchModal .card {
+    position: relative;
+    max-width: 720px;
+    width: 92%;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1;
+}
+#searchTableWrap {
+    margin-top:10px;
+    display:none;
+    overflow-x:auto;
+}
+#searchTableWrap table {
+    width:max-content;
+    min-width:100%;
+}
+
 @media (max-width:720px) {
     .row { flex-direction:column; }
     .controls { flex-direction:column; }
@@ -172,8 +207,9 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
       <option>Manjunathan</option>
     </select>
 
-    <div style="margin-top:12px;">
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
       <button id="submitBtn" class="btn">Submit</button>
+      <button id="updateAmountBtn" class="btn" style="background:#6c757d;">Update</button>
     </div>
   </div>
 
@@ -253,8 +289,9 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     <label for="gMobile">Mobile Number</label>
     <input id="gMobile" type="text" placeholder="Enter mobile number">
 
-    <div style="margin-top:12px;">
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
       <button id="submitGroceryBtn" class="btn">Submit</button>
+      <button id="updateGroceryBtn" class="btn" style="background:#6c757d;">Update</button>
     </div>
   </div>
 
@@ -317,8 +354,9 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
     <label for="vMobile">Mobile Number</label>
     <input id="vMobile" type="text" placeholder="Enter mobile number">
 
-    <div style="margin-top:12px;">
+    <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
       <button id="submitVilakuBtn" class="btn">Submit</button>
+      <button id="updateVilakuBtn" class="btn" style="background:#6c757d;">Update</button>
     </div>
   </div>
 
@@ -477,8 +515,31 @@ th { background: rgba(250,250,250,0.6); font-weight:700; }
 
 </div>
 
+<!-- Search Modal for Update -->
+<div id="searchModal" class="hidden">
+  <div class="modal-backdrop"></div>
+  <div class="card">
+    <h3 class="center" id="searchTitle" style="margin:0 0 8px 0;">Search</h3>
+    <label for="searchInput">Enter Name or Mobile Number</label>
+    <input id="searchInput" type="text" placeholder="Type name or mobile and click Search">
+    <div class="controls">
+      <button id="searchBtn" class="btn">Search</button>
+      <button id="closeSearchBtn" class="btn" style="background:#6c757d;">Close</button>
+      <div id="searchStatusMsg" style="flex:1; text-align:right;"></div>
+    </div>
+    <div id="searchTableWrap">
+      <table id="searchResultTable">
+        <thead>
+          <tr id="searchHeaderRow"></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbyaOURvzbm-rlaPguC4ZnvSFheZ5J4OaTz8VR2b0wtZeGxeMk_dSRgsnROQFhDDQhO7/exec"; 
+const scriptURL = "https://script.google.com/macros/s/AKfycbyc3KS0Yy3iinvR71aFqPZ35akCaVfILRFQhG9_WfyvFpaOQys21OlJD_BZQJqn8SnCRg/exec"; 
 
 function rupee(x){ return '₹' + Number(x || 0).toLocaleString('en-IN'); }
 function esc(s){ if (!s && s !== 0) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -496,9 +557,32 @@ const statusMsg = document.getElementById('statusMsg');
 const gStatusMsg = document.getElementById('gStatusMsg');
 const vStatusMsg = document.getElementById('vStatusMsg');
 
+// Update buttons
+const updateAmountBtn = document.getElementById('updateAmountBtn');
+const updateGroceryBtn = document.getElementById('updateGroceryBtn');
+const updateVilakuBtn = document.getElementById('updateVilakuBtn');
+
+// Search modal elements
+const searchModal = document.getElementById('searchModal');
+const searchTitle = document.getElementById('searchTitle');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const closeSearchBtn = document.getElementById('closeSearchBtn');
+const searchStatusMsg = document.getElementById('searchStatusMsg');
+const searchTableWrap = document.getElementById('searchTableWrap');
+const searchHeaderRow = document.getElementById('searchHeaderRow');
+const searchResultTbody = document.querySelector('#searchResultTable tbody');
+const searchBackdrop = document.querySelector('#searchModal .modal-backdrop');
+
 let lastFetchedRows = [];
 let lastFetchedGroceryRows = [];
 let lastFetchedVilakuRows = [];
+
+// For update flow
+let currentUpdateType = null; // 'amount' | 'grocery' | 'vilaku'
+let currentAmountUpdateRow = null;
+let currentGroceryUpdateRow = null;
+let currentVilakuUpdateRow = null;
 
 // Mode switching
 document.querySelectorAll('input[name="mode"]').forEach(radio => {
@@ -537,6 +621,145 @@ function setLoading(el, statusEl, isLoading, text) {
   }
 }
 
+// --------- SEARCH MODAL (UPDATE FLOW) ---------
+function openSearchModal(mode){
+  currentUpdateType = mode;
+  searchInput.value = '';
+  searchStatusMsg.innerHTML = '';
+  searchHeaderRow.innerHTML = '';
+  searchResultTbody.innerHTML = '';
+  searchTableWrap.style.display = 'none';
+
+  if(mode === 'amount') searchTitle.textContent = 'Search Amount Records';
+  else if(mode === 'grocery') searchTitle.textContent = 'Search Grocery Records';
+  else if(mode === 'vilaku') searchTitle.textContent = 'Search Vilaku Records';
+
+  searchModal.classList.remove('hidden');
+}
+
+function closeSearchModal(){
+  searchModal.classList.add('hidden');
+}
+
+updateAmountBtn.addEventListener('click', ()=>openSearchModal('amount'));
+updateGroceryBtn.addEventListener('click', ()=>openSearchModal('grocery'));
+updateVilakuBtn.addEventListener('click', ()=>openSearchModal('vilaku'));
+closeSearchBtn.addEventListener('click', closeSearchModal);
+if (searchBackdrop) {
+  searchBackdrop.addEventListener('click', closeSearchModal);
+}
+
+searchBtn.addEventListener('click', async ()=>{
+  const q = searchInput.value.trim();
+  if(!q){ alert('Enter name or mobile number'); return; }
+  if(!currentUpdateType){ alert('Select a form first'); return; }
+
+  let typeParam = '';
+  if(currentUpdateType === 'amount') typeParam = 'search-amount';
+  else if(currentUpdateType === 'grocery') typeParam = 'search-grocery';
+  else if(currentUpdateType === 'vilaku') typeParam = 'search-vilaku';
+
+  try{
+    setLoading(searchBtn, searchStatusMsg, true, 'Searching...');
+    const url = scriptURL + '?type=' + encodeURIComponent(typeParam) + '&q=' + encodeURIComponent(q);
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.status !== 'search-success'){ alert('Error: ' + (data.message || 'Unknown')); return; }
+
+    const rows = data.rows || [];
+    searchResultTbody.innerHTML = '';
+    searchHeaderRow.innerHTML = '';
+
+    if(!rows.length){
+      searchTableWrap.style.display = 'none';
+      searchStatusMsg.innerHTML = '<strong>No matching records</strong>';
+      return;
+    }
+
+    let headers = [];
+    if(currentUpdateType === 'amount'){
+      headers = ["Name","Door","Street","Amount","Balance","Payment","Receiver","Date","Mobile"];
+    } else if(currentUpdateType === 'grocery'){
+      headers = ["Name","Door","Street","Item","Qty","Unit","Pending","Receiver","Date","Mobile"];
+    } else if(currentUpdateType === 'vilaku'){
+      headers = ["Name","Door","Street","Amount","Payment","Pending","Receiver","Date","Mobile"];
+    }
+
+    headers.forEach(h=>{
+      const th = document.createElement('th');
+      th.textContent = h;
+      searchHeaderRow.appendChild(th);
+    });
+
+    rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      let cells = [];
+      if(currentUpdateType === 'amount'){
+        cells = [r.name,r.door,r.street,rupee(r.amount),rupee(r.balance),r.payment,r.receiver,r.date,r.mobile];
+      } else if(currentUpdateType === 'grocery'){
+        cells = [r.name,r.door,r.street,r.item,r.qty,r.unit,r.pending,r.receiver,r.date,r.mobile];
+      } else if(currentUpdateType === 'vilaku'){
+        cells = [r.name,r.door,r.street,rupee(r.amount),r.payment,r.pending,r.receiver,r.date,r.mobile];
+      }
+      cells.forEach(val=>{
+        const td = document.createElement('td');
+        td.textContent = (val === null || val === undefined) ? '' : val;
+        tr.appendChild(td);
+      });
+      tr.addEventListener('click', ()=>selectSearchRecord(r));
+      searchResultTbody.appendChild(tr);
+    });
+
+    searchTableWrap.style.display = 'block';
+    searchStatusMsg.innerHTML = '<strong>Found ' + rows.length + ' record(s)</strong>';
+  } catch(err){
+    alert('Error during search.\n' + err);
+  } finally {
+    setLoading(searchBtn, searchStatusMsg, false);
+  }
+});
+
+function selectSearchRecord(r){
+  if(currentUpdateType === 'amount'){
+    currentAmountUpdateRow = r.rowIndex;
+    document.getElementById('name').value = r.name || '';
+    document.getElementById('door').value = r.door || '';
+    document.getElementById('street').value = r.street || '';
+    document.getElementById('amount').value = (r.amount != null ? r.amount : '');
+    document.getElementById('balance').value = (r.balance != null ? r.balance : '');
+    document.getElementById('date').value = r.date || '';
+    document.getElementById('mobile').value = r.mobile || '';
+    document.querySelectorAll('input[name="payment"]').forEach(i=>{ i.checked = (i.value === r.payment); });
+    document.getElementById('receiver').value = r.receiver || '';
+  } else if(currentUpdateType === 'grocery'){
+    currentGroceryUpdateRow = r.rowIndex;
+    document.getElementById('gName').value = r.name || '';
+    document.getElementById('gDoor').value = r.door || '';
+    document.getElementById('gStreet').value = r.street || '';
+    document.getElementById('gItem').value = r.item || '';
+    document.getElementById('gQty').value = (r.qty != null ? r.qty : '');
+    document.getElementById('gUnit').value = r.unit || '';
+    document.getElementById('gPending').value = r.pending || 'No';
+    document.getElementById('gReceiver').value = r.receiver || '';
+    document.getElementById('gDate').value = r.date || '';
+    document.getElementById('gMobile').value = r.mobile || '';
+  } else if(currentUpdateType === 'vilaku'){
+    currentVilakuUpdateRow = r.rowIndex;
+    document.getElementById('vName').value = r.name || '';
+    document.getElementById('vDoor').value = r.door || '';
+    document.getElementById('vStreet').value = r.street || '';
+    document.getElementById('vAmount').value = (r.amount != null ? r.amount : 301);
+    document.getElementById('vPending').value = r.pending || 'No';
+    document.getElementById('vReceiver').value = r.receiver || '';
+    document.getElementById('vDate').value = r.date || '';
+    document.getElementById('vMobile').value = r.mobile || '';
+    document.querySelectorAll('input[name="vPayment"]').forEach(i=>{ i.checked = (i.value === r.payment); });
+  }
+  closeSearchModal();
+}
+
+// --------- REPORT FUNCTIONS (UNCHANGED) ---------
 // Amount Report
 async function fetchReport(from, to){
   if(!from||!to){ alert('Select dates'); return; }
@@ -674,6 +897,7 @@ async function fetchVilakuReport(from, to, pending){
   finally{ setLoading(vFilterBtn, vStatusMsg, false); }
 }
 
+// --------- SUBMIT (INSERT / UPDATE) ---------
 // Submit Amount
 submitBtn.addEventListener('click', async ()=>{
   const name=document.getElementById('name').value.trim();
@@ -689,7 +913,10 @@ submitBtn.addEventListener('click', async ()=>{
   if(!name||!door||!amount){ alert('Fill Name, Door & Amount'); return; }
   if(!paymentEl){ alert('Select Payment Type'); return; }
 
-  const payload={type:'amount',name,door,street,amount:Number(amount),balance:Number(balance||0),payment:paymentEl.value,receiver,mobile};
+  let payloadType = 'amount';
+  if(currentAmountUpdateRow){ payloadType = 'update-amount'; }
+
+  const payload={type:payloadType, rowIndex: currentAmountUpdateRow, name,door,street,amount:Number(amount),balance:Number(balance||0),payment:paymentEl.value,receiver,mobile};
   if(dateVal) payload.date=dateVal;
 
   try{
@@ -699,6 +926,7 @@ submitBtn.addEventListener('click', async ()=>{
     if(data.status==='duplicate'){ alert('Duplicate record'); }
     else if(data.status==='success'){
       alert('Saved successfully');
+      currentAmountUpdateRow = null;
       document.getElementById('name').value='';
       document.getElementById('door').value='';
       document.getElementById('amount').value='';
@@ -706,6 +934,12 @@ submitBtn.addEventListener('click', async ()=>{
       document.getElementById('date').value='';
       document.getElementById('mobile').value='';
       document.querySelectorAll('input[name="payment"]').forEach(i=>i.checked=false);
+      const from=document.getElementById('fromDate').value;
+      const to=document.getElementById('toDate').value;
+      if(from&&to) fetchReport(from,to);
+    } else if(data.status==='updated'){
+      alert('Updated successfully');
+      currentAmountUpdateRow = null;
       const from=document.getElementById('fromDate').value;
       const to=document.getElementById('toDate').value;
       if(from&&to) fetchReport(from,to);
@@ -729,7 +963,10 @@ submitGroceryBtn.addEventListener('click', async ()=>{
 
   if(!name||!door||!qty){ alert('Fill Name, Door & Quantity'); return; }
 
-  const payload={type:'grocery',name,door,street,item,qty:Number(qty),unit,pending,receiver,mobile};
+  let payloadType = 'grocery';
+  if(currentGroceryUpdateRow){ payloadType = 'update-grocery'; }
+
+  const payload={type:payloadType,rowIndex: currentGroceryUpdateRow,name,door,street,item,qty:Number(qty),unit,pending,receiver,mobile};
   if(dateVal) payload.date=dateVal;
 
   try{
@@ -739,11 +976,19 @@ submitGroceryBtn.addEventListener('click', async ()=>{
     if(data.status==='duplicate'){ alert('Duplicate record'); }
     else if(data.status==='success'){
       alert('Saved successfully');
+      currentGroceryUpdateRow = null;
       document.getElementById('gName').value='';
       document.getElementById('gDoor').value='';
       document.getElementById('gQty').value='';
       document.getElementById('gDate').value='';
       document.getElementById('gMobile').value='';
+      const from=document.getElementById('gFromDate').value;
+      const to=document.getElementById('gToDate').value;
+      const pendingFilter=document.getElementById('gFilterPending').value;
+      if(from&&to) fetchGroceryReport(from,to,pendingFilter);
+    } else if(data.status==='updated'){
+      alert('Updated successfully');
+      currentGroceryUpdateRow = null;
       const from=document.getElementById('gFromDate').value;
       const to=document.getElementById('gToDate').value;
       const pendingFilter=document.getElementById('gFilterPending').value;
@@ -758,7 +1003,7 @@ submitVilakuBtn.addEventListener('click', async ()=>{
   const name=document.getElementById('vName').value.trim();
   const door=document.getElementById('vDoor').value.trim();
   const street=document.getElementById('vStreet').value;
-  const amount=document.getElementById('vAmount').value; // Always 300
+  const amount=document.getElementById('vAmount').value; // Always 301 (or updated)
   const paymentEl=document.querySelector('input[name="vPayment"]:checked');
   const pending=document.getElementById('vPending').value;
   const receiver=document.getElementById('vReceiver').value;
@@ -768,7 +1013,10 @@ submitVilakuBtn.addEventListener('click', async ()=>{
   if(!name||!door){ alert('Fill Name & Door'); return; }
   if(!paymentEl){ alert('Select Payment Type'); return; }
 
-  const payload={type:'vilaku',name,door,street,amount:Number(amount),payment:paymentEl.value,pending,receiver,mobile};
+  let payloadType = 'vilaku';
+  if(currentVilakuUpdateRow){ payloadType = 'update-vilaku'; }
+
+  const payload={type:payloadType,rowIndex: currentVilakuUpdateRow,name,door,street,amount:Number(amount),payment:paymentEl.value,pending,receiver,mobile};
   if(dateVal) payload.date=dateVal;
 
   try{
@@ -778,11 +1026,19 @@ submitVilakuBtn.addEventListener('click', async ()=>{
     if(data.status==='duplicate'){ alert('Duplicate record'); }
     else if(data.status==='success'){
       alert('Saved successfully');
+      currentVilakuUpdateRow = null;
       document.getElementById('vName').value='';
       document.getElementById('vDoor').value='';
       document.getElementById('vDate').value='';
       document.getElementById('vMobile').value='';
       document.querySelectorAll('input[name="vPayment"]').forEach(i=>i.checked=false);
+      const from=document.getElementById('vFromDate').value;
+      const to=document.getElementById('vToDate').value;
+      const pendingFilter=document.getElementById('vFilterPending').value;
+      if(from&&to) fetchVilakuReport(from,to,pendingFilter);
+    } else if(data.status==='updated'){
+      alert('Updated successfully');
+      currentVilakuUpdateRow = null;
       const from=document.getElementById('vFromDate').value;
       const to=document.getElementById('vToDate').value;
       const pendingFilter=document.getElementById('vFilterPending').value;
